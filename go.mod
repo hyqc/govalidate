@@ -1,4 +1,5 @@
 module github.com/hyqc/govalidate
+
 go 1.21.3
 
 require (
