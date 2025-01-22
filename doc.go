@@ -1,6 +1,6 @@
 //go:build ignore
 
-// 简单封装github.com/go-playground/validator/v10，增加快速翻译错误为对应语言的错误信息函数
+// 快速翻译github.com/go-playground/validator/v10的验证结果为指定的语言
 // Example:
 // package main
 // import (
@@ -24,7 +24,7 @@
 //	}
 //
 //	func init() {
-//		err := Init(zh.New(), func(valid *validator.Validate, trans ut.Translator) error {
+//		err := Init(zh.New(), func(valid *validator.Validator, trans ut.Translator) error {
 //			return zhTrans.RegisterDefaultTranslations(valid, trans)
 //		})
 //		if err != nil {
@@ -42,7 +42,7 @@
 //			},
 //		}
 //
-//		err = TranslateError(Validate.Struct(foo))
+//		err = TranslateError(Validator.Struct(foo))
 //			fmt.Println(err)
 //		}
 //		// Output: 背包ID最小只能为10

@@ -18,15 +18,43 @@ const (
 )
 
 var (
-	// Validate 验证器实例
-	Validate = validator.New(validator.WithRequiredStructEnabled())
-	trans    ut.Translator
+	// Validator 验证器实例
+	Validator = validator.New(validator.WithRequiredStructEnabled())
+	trans     ut.Translator
 )
 
 type custom struct {
 	lang         locales.Translator
 	translator   CustomTranslator
 	tagNameValue string
+}
+
+// ValidatorFunc 验证函数类型，data 为结构体类型的数值
+type ValidatorFunc func(data interface{}) error
+
+// Rules 验证规则
+type Rules struct {
+	Items []*StructRules // 多个struct字段的验证规则
+}
+
+// StructRules 验证规则
+type StructRules struct {
+	// Type  interface{}
+	// 示例：
+	// type Foo struct {
+	// 	 Name string
+	//   Age int
+	// }
+	// 则Type为Foo{}
+	Type interface{}
+
+	// Rules map[string]string
+	// key为结构体字段名，value为验证规则，示例：
+	// rules := map[string]string{
+	//		"Name": "required,min=6,max=32",
+	//		"Age": "required,min=18,max=100",
+	// }
+	Rules map[string]string
 }
 
 type Option func(c *custom)
@@ -36,6 +64,7 @@ type CustomTranslator func(validate *validator.Validate, trans ut.Translator) er
 
 // WithTagNameValue 设置字段标签名的值，示例label
 //
+//	示例：
 //	type Foo struct {
 //	    Age  int    `json:"age" validate:"required,min=18" label:"年龄"`
 //	    Name string `json:"name" validate:"required,max=32" label:"用户名"`
@@ -67,10 +96,10 @@ func (c *custom) initCustom() error {
 	if !ok {
 		return fmt.Errorf("lang locale is not exist")
 	}
-	if err := c.translator(Validate, trans); err != nil {
+	if err := c.translator(Validator, trans); err != nil {
 		return err
 	}
-	Validate.RegisterTagNameFunc(func(field reflect.StructField) string {
+	Validator.RegisterTagNameFunc(func(field reflect.StructField) string {
 		label := field.Tag.Get(c.tagNameValue)
 		if label == "" {
 			return field.Name
