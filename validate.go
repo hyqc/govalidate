@@ -2,6 +2,7 @@ package govalidate
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -21,9 +22,7 @@ func TranslateError(err error) error {
 	return err
 }
 
-// ValidateStructWithRules 根据传入的规则验证结构体数据
-// data 结构体值
-// rules 规则
+// ValidateStructWithRules 验证结构体使用map传入验证规则
 func ValidateStructWithRules(data interface{}, rules Rules) error {
 	for _, item := range rules {
 		Validator.RegisterStructValidationMapRules(item.Rules, item.Type)
@@ -31,54 +30,17 @@ func ValidateStructWithRules(data interface{}, rules Rules) error {
 	return TranslateError(Validator.Struct(data))
 }
 
-// ValidateStruct 执行自定义验证验证结构体数据
-// data 结构体值
-// call 自定义验证函数，示例：
-// Example:
-//
-//	type BagItem struct {
-//		ID  int `json:"id"`
-//		Num int `json:"num"`
-//	}
-//
-//	type Foo struct {
-//		Name string   `json:"name" `
-//		Age  int      `json:"age" `
-//		Bag  *BagItem `json:"bag" `
-//	}
-//
-//	err := Init(zh.New(), func(valid *validator.Validate, trans ut.Translator) error {
-//		return zhTrans.RegisterDefaultTranslations(valid, trans)
-//	})
-//	if err != nil {
-//		panic(err)
-//	}
-//
-//	foo := Foo{
-//		Name: "John1111111111111111111111111111111111111111111111111111111111",
-//		Age:  20,
-//		Bag: &BagItem{
-//			ID:  12,
-//			Num: 13,
-//		},
-//	}
-//
-//	reqAddr := func(data interface{}) error {
-//		rules := &StructRule{
-//			{
-//				Type: Foo{},
-//				Rules: map[string]string{
-//					"ID":    "required",
-//					"Title": "required",
-//				},
-//			},
-//		}
-//
-//		return ValidateStructWithRules(data, rules)
-//	}
-//
-//	err = ValidateStruct(foo, reqAddr)
-func ValidateStruct(data interface{}, call ...ValidatorFunc) error {
+// ValidateWithCtx 执行验证器
+func ValidateWithCtx(ctx *gin.Context, data interface{}, call ...ValidatorFunc) error {
+	if err := ctx.ShouldBind(data); err != nil {
+		// 请求解析失败
+		return err
+	}
+	return Validate(data, call...)
+}
+
+// Validate 执行验证器
+func Validate(data interface{}, call ...ValidatorFunc) error {
 	for _, handler := range call {
 		if err := handler(data); err != nil {
 			return err

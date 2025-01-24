@@ -74,14 +74,12 @@ func ExampleValidate() {
 	}
 
 	reqAddr := func(data interface{}) error {
-		rules := &Rules{
-			Items: []*StructRule{
-				{
-					Type: Foo{},
-					Rules: map[string]string{
-						"ID":    "required",
-						"Title": "required",
-					},
+		rules := []*StructRule{
+			{
+				Type: Foo{},
+				Rules: map[string]string{
+					"ID":    "required",
+					"Title": "required",
 				},
 			},
 		}
@@ -89,7 +87,7 @@ func ExampleValidate() {
 		return ValidateStructWithRules(data, rules)
 	}
 
-	err = ValidateStruct(foo, reqAddr)
+	err = Validate(foo, reqAddr)
 	fmt.Println(err)
 
 	// Output:
