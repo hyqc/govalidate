@@ -33,12 +33,10 @@ type custom struct {
 type ValidatorFunc func(data interface{}) error
 
 // Rules 验证规则
-type Rules struct {
-	Items []*StructRules // 多个struct字段的验证规则
-}
+type Rules []*StructRule
 
-// StructRules 验证规则
-type StructRules struct {
+// StructRule 验证规则
+type StructRule struct {
 	// Type  interface{}
 	// 示例：
 	// type Foo struct {

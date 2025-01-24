@@ -24,8 +24,8 @@ func TranslateError(err error) error {
 // ValidateStructWithRules 根据传入的规则验证结构体数据
 // data 结构体值
 // rules 规则
-func ValidateStructWithRules(data interface{}, rules *Rules) error {
-	for _, item := range rules.Items {
+func ValidateStructWithRules(data interface{}, rules Rules) error {
+	for _, item := range rules {
 		Validator.RegisterStructValidationMapRules(item.Rules, item.Type)
 	}
 	return TranslateError(Validator.Struct(data))
@@ -64,14 +64,12 @@ func ValidateStructWithRules(data interface{}, rules *Rules) error {
 //	}
 //
 //	reqAddr := func(data interface{}) error {
-//		rules := &Rules{
-//			Items: []*StructRules{
-//				{
-//					Type: Foo{},
-//					Rules: map[string]string{
-//						"ID":    "required",
-//						"Title": "required",
-//					},
+//		rules := &StructRule{
+//			{
+//				Type: Foo{},
+//				Rules: map[string]string{
+//					"ID":    "required",
+//					"Title": "required",
 //				},
 //			},
 //		}

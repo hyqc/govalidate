@@ -75,7 +75,7 @@ func ExampleValidate() {
 
 	reqAddr := func(data interface{}) error {
 		rules := &Rules{
-			Items: []*StructRules{
+			Items: []*StructRule{
 				{
 					Type: Foo{},
 					Rules: map[string]string{
